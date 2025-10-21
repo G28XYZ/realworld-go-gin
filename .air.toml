@@ -1,0 +1,12 @@
+# Основной исполняемый файл
+cmd = "go run main.go"
+
+# Папки, за которыми следить
+include_dir = ["."]
+exclude_dir = ["vendor", "tmp", "node_modules"]
+
+# Файл конфигурации
+env = ["GO_ENV=development"]
+
+# Вывод логов
+log_color = "true"
