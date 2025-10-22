@@ -1,5 +1,5 @@
 # Основной исполняемый файл
-cmd = "go run main.go"
+cmd = "go run cmd/main.go"
 
 # Папки, за которыми следить
 include_dir = ["."]

@@ -8,3 +8,6 @@ database:
   name: "realworld_dev"
   host: "localhost"
   port: "5432"
+
+jwt:
+  phrase: 'secret'

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -21,27 +22,39 @@ type Config struct {
 		Host     string `yaml:"host"`
 		Port     string `yaml:"port"`
 	} `yaml:"database"`
+
+	Jwt struct {
+		Phrase string `yaml:"phrase"`
+	} `yaml:"jwt"`
 }
+
+
 
 func LoadConfig() *Config {
 	env := os.Getenv("GO_ENV")
 	if env == "" {
 		env = "dev" // значение по умолчанию
 	}
-
-	path := fmt.Sprintf("src/config/config.%s.yaml", env)
+	
+	path := fmt.Sprintf("src/config/config.%s.yaml", strings.TrimSpace(env))
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("❌ Ошибка открытия %s: %v", path, err)
 	}
 	defer file.Close()
-
-	var cfg Config
+	
 	decoder := yaml.NewDecoder(file)
+	var cfg Config
 	if err := decoder.Decode(&cfg); err != nil {
 		log.Fatalf("❌ Ошибка чтения конфигурации: %v", err)
 	}
-
+	
 	log.Printf("✅ Конфигурация загружена: %s", path)
 	return &cfg
+}
+
+
+func GetConfig() *Config {
+	cfg := LoadConfig()
+	return cfg
 }

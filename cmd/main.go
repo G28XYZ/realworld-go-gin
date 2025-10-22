@@ -3,16 +3,14 @@ package main
 import (
 	"fmt"
 	"realworld-go-gin/src/config"
-	"realworld-go-gin/src/handlers"
+	"realworld-go-gin/src/handlers/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 
-
-
 func main() {
-	cfg := config.LoadConfig()
+	cfg := config.GetConfig()
 
 	if cfg.Server.Debug {
 		gin.SetMode(gin.DebugMode)
@@ -23,7 +21,8 @@ func main() {
 	r := gin.Default()
 	api := r.Group("/api")
 	{
-		api.POST("/users/login", handlers.Login)
+		api.POST("/users/login", auth.Login)
+		api.POST("/users", auth.Registration)
 	}
 
 	port := cfg.Server.Port
