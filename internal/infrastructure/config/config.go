@@ -6,37 +6,19 @@ import (
 	"os"
 	"strings"
 
+	"realworld-go-gin/internal/infrastructure/config_types"
+
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Server struct {
-		Port  string `yaml:"port"`
-		Debug bool   `yaml:"debug"`
-	} `yaml:"server"`
 
-	Database struct {
-		User     string `yaml:"user"`
-		Password string `yaml:"password"`
-		Name     string `yaml:"name"`
-		Host     string `yaml:"host"`
-		Port     string `yaml:"port"`
-	} `yaml:"database"`
-
-	Jwt struct {
-		Phrase string `yaml:"phrase"`
-	} `yaml:"jwt"`
-}
-
-
-
-func LoadConfig() *Config {
+func LoadConfig() *config_types.Config {
 	env := os.Getenv("GO_ENV")
 	if env == "" {
 		env = "dev" // значение по умолчанию
 	}
 	
-	path := fmt.Sprintf("src/config/config.%s.yaml", strings.TrimSpace(env))
+	path := fmt.Sprintf("internal/infrastructure/config/config.%s.yaml", strings.TrimSpace(env))
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("❌ Ошибка открытия %s: %v", path, err)
@@ -44,7 +26,7 @@ func LoadConfig() *Config {
 	defer file.Close()
 	
 	decoder := yaml.NewDecoder(file)
-	var cfg Config
+	var cfg config_types.Config
 	if err := decoder.Decode(&cfg); err != nil {
 		log.Fatalf("❌ Ошибка чтения конфигурации: %v", err)
 	}
@@ -54,7 +36,7 @@ func LoadConfig() *Config {
 }
 
 
-func GetConfig() *Config {
+func GetConfig() *config_types.Config {
 	cfg := LoadConfig()
 	return cfg
 }

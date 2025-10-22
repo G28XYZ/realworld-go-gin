@@ -2,5 +2,5 @@ package user
 
 type Repository interface {
 	FindByEmail(email string) (*User, error)
-	Save(user *User) error
+	Create(user *User) error
 }

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"realworld-go-gin/internal/domain/user"
 
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ type GormUserRepository struct {
 }
 
 func NewGormUserRepository(db *gorm.DB) *GormUserRepository {
-	return &GormUserRepository{db}
+	return &GormUserRepository{db: db}
 }
 
 func (r *GormUserRepository) FindByEmail(email string) (*user.User, error) {
@@ -19,10 +20,10 @@ func (r *GormUserRepository) FindByEmail(email string) (*user.User, error) {
 	if err := r.db.Where("email = ?", email).First(&u).Error; err != nil {
 		return nil, err
 	}
-
 	return &u, nil
 }
 
-func (r *GormUserRepository) Save(u *user.User) error {
+func (r *GormUserRepository) Create(u *user.User) error {
+	fmt.Println(u)
 	return r.db.Create(u).Error
 }

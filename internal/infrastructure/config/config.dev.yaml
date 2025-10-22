@@ -1,0 +1,13 @@
+server:
+  port: "8081"
+  debug: true
+
+database:
+  user    : "postgres"
+  password: "postgres"
+  name    : "realworld"
+  host    : "localhost"
+  port    : "5432"
+
+jwt:
+  phrase: 'secret'
