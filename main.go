@@ -39,6 +39,6 @@ func main() {
 	r := gin.Default()
 	httpHandler.NewUserHandler(r, usecase)
 
-	fmt.Printf("\nhttp://localhost:%s\n", cfg.Server.Port)
-	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
+	fmt.Printf("\nhttp://localhost:%d\n", cfg.Server.Port)
+	r.Run(fmt.Sprintf(":%d", cfg.Server.Port))
 }

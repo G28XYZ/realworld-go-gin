@@ -3,6 +3,8 @@ package database
 import (
 	"fmt"
 	"log"
+	"realworld-go-gin/internal/infrastructure/config"
+	"realworld-go-gin/internal/infrastructure/config_types"
 
 	"database/sql"
 
@@ -12,30 +14,75 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Connect() (*gorm.DB, error) {
-	dsn, db_cfg := DSN()
+type pgConnectParams struct {
+	password string
+}
 
-	host     := "localhost"
-	port     := 5432
-	user     := "postgres"
-	password := "postgres"
-	targetDB := db_cfg.Name
+func pg_connect(params pgConnectParams) (*sql.DB, error) {
+	cfg := config.GetConfig()
 
-	// 🔹 Подключаемся к системной БД postgres
-	systemConnStr := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=postgres sslmode=disable",
-		host, port, user, password)
+	systemConnStr, _ := DSN(
+		config_types.Database{
+			Password: params.password,
+			Host    : cfg.Database.Host,
+			User    : cfg.Database.User,
+			Port    : cfg.Database.Port,
+			Name    : cfg.Database.Name,
+		},
+	)
 
+		
+	fmt.Println(params.password)
 	db, err := sql.Open("postgres", systemConnStr)
 	if err != nil {
-		log.Fatalf("Ошибка подключения: %v", err)
+		// log.Fatalf("Ошибка подключения: %v", err)
+		return db, err
+	}
+
+	if err := db.Ping(); err != nil {
+		// log.Fatalf("❌ Не удалось подключиться к Postgres: %v", err)
+		return db, err
+	}
+	fmt.Println("✅ Подключение к Postgres успешно!")
+
+	return db, nil
+}
+
+func Connect() (*gorm.DB, error) {
+	cfg := config.GetConfig()
+
+	dsn, db_cfg := DSN(
+		config_types.Database{
+			Password: cfg.Database.Password,
+			Host    : cfg.Database.Host,
+			User    : cfg.Database.User,
+			Port    : cfg.Database.Port,
+			Name    : cfg.Database.Name,
+		},
+	)
+
+	db, err := pg_connect(pgConnectParams{password: cfg.Database.Password})
+
+	if err != nil {
+		db, err = pg_connect(pgConnectParams{password: cfg.Database.AltPass})
+		if err != nil {
+			log.Fatalf("❌ Не удалось подключиться к Postgres: %v", err)
+		} else {
+			db_cfg.Password = db_cfg.AltPass
+			dsn, db_cfg = DSN(
+				config_types.Database{
+					Password: cfg.Database.AltPass,
+					Host    : cfg.Database.Host,
+					User    : cfg.Database.User,
+					Port    : cfg.Database.Port,
+					Name    : cfg.Database.Name,
+				},
+			)
+		}
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatalf("❌ Не удалось подключиться к Postgres: %v", err)
-	}
-	fmt.Println("✅ Подключение к Postgres успешно!")
+	targetDB := db_cfg.Name
 
 	// Проверяем, существует ли нужная БД
 	var exists bool

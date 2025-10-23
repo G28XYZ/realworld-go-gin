@@ -3,14 +3,15 @@ package config_types
 type Database struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
+	AltPass  string `yaml:"alt_pass"`
 	Name     string `yaml:"name"`
 	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
+	Port     int    `yaml:"port"`
 }
 
 type Server struct {
-	Port  string `yaml:"port"`
-	Debug bool   `yaml:"debug"`
+	Port  int  `yaml:"port"`
+	Debug bool `yaml:"debug"`
 }
 
 type Jwt struct {
